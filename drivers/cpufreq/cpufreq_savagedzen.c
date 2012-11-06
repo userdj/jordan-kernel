@@ -97,7 +97,7 @@ static unsigned int up_min_freq;
  * to minimize wakeup issues.
  * Set sleep_max_freq=0 to disable this behavior.
  */
-#define DEFAULT_SLEEP_MAX_FREQ 0
+#define DEFAULT_SLEEP_MAX_FREQ 384000
 static unsigned int sleep_max_freq;
 
 /*
@@ -748,3 +748,4 @@ module_exit(cpufreq_savagedzen_exit);
 MODULE_AUTHOR ("jsseidel");
 MODULE_DESCRIPTION ("'cpufreq_savagedzen' - A badass cpufreq governor! Based on Smartass");
 MODULE_LICENSE ("GPL");
+
