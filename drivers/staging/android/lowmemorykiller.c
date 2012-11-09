@@ -112,8 +112,9 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 	if (lowmem_minfree_size < array_size)
 		array_size = lowmem_minfree_size;
 	for (i = 0; i < array_size; i++) {
-		if (other_free < lowmem_minfree[i] &&
-		    other_file < lowmem_minfree[i]) {
+		// Tweaked:
+		if (other_free < (lowmem_minfree[i]+1024) &&
+		    other_file < (lowmem_minfree[i]+1024)) {
 			min_adj = lowmem_adj[i];
 			break;
 		}
