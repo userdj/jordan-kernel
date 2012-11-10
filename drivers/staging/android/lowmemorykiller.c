@@ -36,6 +36,8 @@
 #include <linux/sched.h>
 #include <linux/notifier.h>
 
+#define SEC_ADJUST_LMK
+
 static uint32_t lowmem_debug_level = 2;
 static int lowmem_adj[6] = {
 	0,
@@ -93,8 +95,13 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 	int selected_oom_adj;
 	int array_size = ARRAY_SIZE(lowmem_adj);
 	int other_free = global_page_state(NR_FREE_PAGES);
-	int other_file = global_page_state(NR_FILE_PAGES) -
-						global_page_state(NR_SHMEM);
+	#ifdef SEC_ADJUST_LMK
+		int other_file = global_page_state(NR_INACTIVE_FILE) +
+			global_page_state(NR_ACTIVE_FILE);
+	#else
+		int other_file = global_page_state(NR_FILE_PAGES) -
+			global_page_state(NR_SHMEM);
+	#endif
 
 	/*
 	 * If we already have a death outstanding, then
@@ -127,7 +134,12 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 		global_page_state(NR_ACTIVE_FILE) +
 		global_page_state(NR_INACTIVE_ANON) +
 		global_page_state(NR_INACTIVE_FILE);
-	if (nr_to_scan <= 0 || min_adj == OOM_ADJUST_MAX + 1) {
+	#ifdef SEC_ADJUST_LMK
+		if (nr_to_scan <= 0)
+	#else
+		if (nr_to_scan <= 0 || min_adj == OOM_ADJUST_MAX + 1)
+	#endif
+	{
 		lowmem_print(5, "lowmem_shrink %d, %x, return %d\n",
 			     nr_to_scan, gfp_mask, rem);
 		return rem;
@@ -184,6 +196,10 @@ static int lowmem_shrink(struct shrinker *s, int nr_to_scan, gfp_t gfp_mask)
 		force_sig(SIGKILL, selected);
 		rem -= selected_tasksize;
 	}
+	#ifdef SEC_ADJUST_LMK
+		else
+			rem = -1;
+	#endif
 	lowmem_print(4, "lowmem_shrink %d, %x, return %d\n",
 		     nr_to_scan, gfp_mask, rem);
 	read_unlock(&tasklist_lock);
@@ -219,5 +235,3 @@ module_init(lowmem_init);
 module_exit(lowmem_exit);
 
 MODULE_LICENSE("GPL");
-
-
