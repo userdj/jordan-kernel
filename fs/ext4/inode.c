@@ -1193,8 +1193,10 @@ static pgoff_t ext4_num_dirty_pages(struct inode *inode, pgoff_t idx,
 				break;
 			idx++;
 			num++;
-			if (num >= max_pages)
+			if (num >= max_pages) {
+				done = 1;
 				break;
+			}
 		}
 		pagevec_release(&pvec);
 	}
@@ -2870,12 +2872,15 @@ static int ext4_da_writepages(struct address_space *mapping,
 	 * stupidity, which is that ext4's mballoc code only allocates
 	 * at most 2048 blocks.  So we force contiguous writes up to
 	 * the number of dirty blocks in the inode, or
-	 * sbi->max_writeback_mb_bump whichever is smaller.
+	 * sbi->max_writeback_mb_bump whichever is smaller. 
 	 */
 	max_pages = sbi->s_max_writeback_mb_bump << (20 - PAGE_CACHE_SHIFT);
-	if (!range_cyclic && range_whole)
-		desired_nr_to_write = wbc->nr_to_write * 8;
-	else
+	if (!range_cyclic && range_whole) {
+		if (wbc->nr_to_write == LLONG_MAX)
+			desired_nr_to_write = wbc->nr_to_write;
+		else
+			desired_nr_to_write = wbc->nr_to_write * 8;
+	} else
 		desired_nr_to_write = ext4_num_dirty_pages(inode, index,
 							   max_pages);
 	if (desired_nr_to_write > max_pages)
