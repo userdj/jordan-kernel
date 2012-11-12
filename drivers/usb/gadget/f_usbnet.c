@@ -334,7 +334,6 @@ static int usb_ether_stop(struct net_device *dev)
 
 static struct net_device_stats *usb_ether_get_stats(struct net_device *dev)
 {
-	printk(KERN_DEBUG "%s\n", __func__);
 	return &g_usbnet_context->stats;
 }
 
