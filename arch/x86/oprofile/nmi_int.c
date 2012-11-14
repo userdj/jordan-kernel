@@ -624,6 +624,7 @@ static int __init ppro_init(char **cpu_type)
 	case 0x0f:
 	case 0x16:
 	case 0x17:
+	case 0x1d:
 		*cpu_type = "i386/core_2";
 		break;
 	case 0x1a:
@@ -749,12 +750,12 @@ int __init op_nmi_init(struct oprofile_operations *ops)
 
 void op_nmi_exit(void)
 {
-	if (using_nmi) {
-		exit_sysfs();
+	if (!using_nmi)
+		return;
+	exit_sysfs();
 #ifdef CONFIG_SMP
-		unregister_cpu_notifier(&oprofile_cpu_nb);
+	unregister_cpu_notifier(&oprofile_cpu_nb);
 #endif
-	}
 	if (model->exit)
 		model->exit();
 }
