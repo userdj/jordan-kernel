@@ -264,10 +264,8 @@ int ecryptfs_lookup_and_interpose_lower(struct dentry *ecryptfs_dentry,
 	struct dentry *lower_dir_dentry;
 	struct vfsmount *lower_mnt;
 	struct inode *lower_inode;
-	struct ecryptfs_mount_crypt_stat *mount_crypt_stat;
 	struct ecryptfs_crypt_stat *crypt_stat;
 	char *page_virt = NULL;
-	u64 file_size;
 	int rc = 0;
 
 	lower_dir_dentry = lower_dentry->d_parent;
@@ -1028,7 +1026,8 @@ static int ecryptfs_setattr(struct dentry *dentry, struct iattr *ia)
 				goto out;
 			}
 			rc = 0;
-			crypt_stat->flags &= ~(ECRYPTFS_ENCRYPTED);
+			crypt_stat->flags &= ~(ECRYPTFS_I_SIZE_INITIALIZED
+						| ECRYPTFS_ENCRYPTED);
 		}
 	}
 	mutex_unlock(&crypt_stat->cs_mutex);
