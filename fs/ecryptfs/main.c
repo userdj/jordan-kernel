@@ -209,11 +209,11 @@ out:
 enum { ecryptfs_opt_sig, ecryptfs_opt_ecryptfs_sig,
        ecryptfs_opt_cipher, ecryptfs_opt_ecryptfs_cipher,
        ecryptfs_opt_ecryptfs_key_bytes,
-        ecryptfs_opt_passthrough, ecryptfs_opt_xattr_metadata,
-        ecryptfs_opt_encrypted_view, ecryptfs_opt_fnek_sig,
-        ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
-        ecryptfs_opt_unlink_sigs, ecryptfs_opt_check_dev_ruid,
-        ecryptfs_opt_err };
+       ecryptfs_opt_passthrough, ecryptfs_opt_xattr_metadata,
+       ecryptfs_opt_encrypted_view, ecryptfs_opt_fnek_sig,
+       ecryptfs_opt_fn_cipher, ecryptfs_opt_fn_cipher_key_bytes,
+       ecryptfs_opt_unlink_sigs, ecryptfs_opt_check_dev_ruid,
+       ecryptfs_opt_err };
 
 static const match_table_t tokens = {
 	{ecryptfs_opt_sig, "sig=%s"},
@@ -229,7 +229,6 @@ static const match_table_t tokens = {
 	{ecryptfs_opt_fn_cipher_key_bytes, "ecryptfs_fn_key_bytes=%u"},
 	{ecryptfs_opt_unlink_sigs, "ecryptfs_unlink_sigs"},
 	{ecryptfs_opt_check_dev_ruid, "ecryptfs_check_dev_ruid"},
-	{ecryptfs_opt_no_new_encrypted, "no_new_encrypted"},
 	{ecryptfs_opt_err, NULL}
 };
 
@@ -416,9 +415,6 @@ static int ecryptfs_parse_options(struct super_block *sb, char *options,
 			break;
 		case ecryptfs_opt_unlink_sigs:
 			mount_crypt_stat->flags |= ECRYPTFS_UNLINK_SIGS;
-			break;
-		case ecryptfs_opt_no_new_encrypted:
-			mount_crypt_stat->flags |= ECRYPTFS_NO_NEW_ENCRYPTED;
 			break;
 		case ecryptfs_opt_check_dev_ruid:
 			*check_ruid = 1;
@@ -621,8 +617,8 @@ out:
  *                        with as much information as it can before needing
  *                        the lower filesystem.
  * ecryptfs_read_super(): this accesses the lower filesystem and uses
- *                        ecryptfs_interpose to perform most of the linking
- * ecryptfs_interpose(): links the lower filesystem into ecryptfs (inode.c)
+ *                        ecryptfs_interpolate to perform most of the linking
+ * ecryptfs_interpolate(): links the lower filesystem into ecryptfs
  */
 static int ecryptfs_get_sb(struct file_system_type *fs_type, int flags,
 			const char *dev_name, void *raw_data,
