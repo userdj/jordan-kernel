@@ -63,7 +63,7 @@ static void evdev_pass_event(struct evdev_client *client,
 	 * "empty" by having client->head == client->tail.
 	 */
 	spin_lock(&client->buffer_lock);
-	wake_lock_timeout(&client->wake_lock, 10/HZ);
+	wake_lock_timeout(&client->wake_lock, 5 * HZ);
 	do {
 		client->buffer[client->head++] = *event;
 		client->head &= client->bufsize - 1;
