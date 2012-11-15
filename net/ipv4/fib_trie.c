@@ -120,10 +120,9 @@ struct leaf {
 
 struct leaf_info {
 	struct hlist_node hlist;
-	int plen;
-	u32 mask_plen; /* ntohl(inet_make_mask(plen)) */
-	struct list_head falh;
 	struct rcu_head rcu;
+	int plen;
+	struct list_head falh;
 };
 
 struct tnode {
@@ -436,7 +435,6 @@ static struct leaf_info *leaf_info_new(int plen)
 	struct leaf_info *li = kmalloc(sizeof(struct leaf_info), GFP_KERNEL);
 	if (li) {
 		li->plen = plen;
-		li->mask_plen = ntohl(inet_make_mask(plen));
 		INIT_LIST_HEAD(&li->falh);
 	}
 	return li;
@@ -1352,8 +1350,10 @@ static int check_leaf(struct trie *t, struct leaf *l,
 
 	hlist_for_each_entry_rcu(li, node, hhead, hlist) {
 		int err;
-		
-		if (l->key != (key & li->mask_plen))
+		int plen = li->plen;
+		__be32 mask = inet_make_mask(plen);
+
+		if (l->key != (key & ntohl(mask)))
 			continue;
 
 		err = fib_semantic_match(&li->falh, flp, res, plen);
