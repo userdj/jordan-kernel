@@ -39,6 +39,11 @@ config IOSCHED_CFQ
 	  among all processes in the system. It should provide a fair
 	  working environment, suitable for desktop systems.
 	  This is the default I/O scheduler.
+config IOSCHED_VR
+	tristate "V(R) I/O scheduler"
+	---help---
+	  Requests are chosen according to SSTF with a penalty of rev_penalty
+	  for switching head direction.
 
 config IOSCHED_SIO
 	tristate "Simple I/O scheduler"
@@ -80,6 +85,7 @@ config DEFAULT_IOSCHED
 	default "deadline" if DEFAULT_DEADLINE
 	default "cfq" if DEFAULT_CFQ
 	default "noop" if DEFAULT_NOOP
+	default "vr" if DEFAULT_VR
 	default "sio" if DEFAULT_SIO
 
 endmenu
