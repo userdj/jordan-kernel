@@ -148,6 +148,12 @@ config CPU_FREQ_DEFAULT_GOV_SMOOTHASS
 	help
 	  Use the CPUFreq governor 'smoothass' as default.
 
+config CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
+	bool "interactive"
+	select CPU_FREQ_GOV_INTERACTIVEX
+	help
+	  Use the CPUFreq governor 'interactivex' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -262,6 +268,12 @@ config CPU_FREQ_GOV_SMOOTHASS
 	depends on CPU_FREQ
 	help
 	 Slightly more aggressive smartass
+
+config CPU_FREQ_GOV_INTERACTIVEX
+	tristate "'interactiveX' cpufreq policy governor"
+	help
+	  'interactiveX' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
 
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
