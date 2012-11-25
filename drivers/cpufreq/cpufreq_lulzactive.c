@@ -75,13 +75,13 @@ static spinlock_t down_cpumask_lock;
 /*
 * The minimum amount of time to spend at a frequency before we can step up.
 */
-#define DEFAULT_UP_SAMPLE_TIME 24000
+#define DEFAULT_UP_SAMPLE_TIME 48000
 static unsigned long up_sample_time;
 
 /*
 * The minimum amount of time to spend at a frequency before we can step down.
 */
-#define DEFAULT_DOWN_SAMPLE_TIME 49000
+#define DEFAULT_DOWN_SAMPLE_TIME 24000
 static unsigned long down_sample_time;
 
 /*
@@ -99,14 +99,14 @@ LULZACTIVE_DEBUG_SUSPEND=8,
 /*
 * CPU freq will be increased if measured load > inc_cpu_load;
 */
-#define DEFAULT_INC_CPU_LOAD 60
+#define DEFAULT_INC_CPU_LOAD 80
 static unsigned long inc_cpu_load;
 
 /*
 * CPU freq will be decreased if measured load < dec_cpu_load;
 * not implemented yet.
 */
-#define DEFAULT_DEC_CPU_LOAD 30
+#define DEFAULT_DEC_CPU_LOAD 40
 static unsigned long dec_cpu_load;
 
 /*
@@ -120,7 +120,7 @@ static unsigned long pump_up_step;
 * Decreasing frequency table index
 * zero disables and will calculate frequency according to load heuristic.
 */
-#define DEFAULT_PUMP_DOWN_STEP 1
+#define DEFAULT_PUMP_DOWN_STEP 2
 static unsigned long pump_down_step;
 
 /*
@@ -129,8 +129,8 @@ static unsigned long pump_down_step;
 static unsigned int suspending;
 static unsigned int early_suspended;
 
-#define SCREEN_OFF_LOWEST_STEP (0xffffffff)
-#define DEFAULT_SCREEN_OFF_MIN_STEP (SCREEN_OFF_LOWEST_STEP)
+//#define SCREEN_OFF_LOWEST_STEP (0xffffffff)
+#define DEFAULT_SCREEN_OFF_MIN_STEP 3
 static unsigned long screen_off_min_step;
 
 #define DEBUG 0
