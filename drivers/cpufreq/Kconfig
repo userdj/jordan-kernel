@@ -154,6 +154,26 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVEX
 	help
 	  Use the CPUFreq governor 'interactivex' as default.
 
+config CPU_FREQ_DEFAULT_GOV_SCARY
+	bool "scary"
+	select CPU_FREQ_GOV_SCARY
+	help
+		Use the CPUFreq governor 'scary' as default.
+
+config CPU_FREQ_DEFAULT_GOV_SUPERBAD
+	bool "superbad"
+	select CPU_FREQ_GOV_SUPERBAD
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'superbad' as default.
+
+config CPU_FREQ_DEFAULT_GOV_VIRTUOUS
+	bool "virtuous"
+   	select CPU_FREQ_GOV_VIRTUOUS
+   	select CPU_FREQ_GOV_PERFORMANCE
+   	help
+     	  Use the CPUFreq governor 'virtuous' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
