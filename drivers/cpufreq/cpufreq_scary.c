@@ -650,7 +650,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 					MIN_LATENCY_MULTIPLIER * latency);
 			dbs_tuners_ins.sampling_rate =
 				max(min_sampling_rate,
-				    latency * CONFIG_LATENCY_MULTIPLIER);
+				    latency * MIN_LATENCY_MULTIPLIER);
 
 			cpufreq_register_notifier(
 					&dbs_cpufreq_notifier_block,

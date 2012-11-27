@@ -167,13 +167,6 @@ config CPU_FREQ_DEFAULT_GOV_SUPERBAD
 	help
 	  Use the CPUFreq governor 'superbad' as default.
 
-config CPU_FREQ_DEFAULT_GOV_VIRTUOUS
-	bool "virtuous"
-   	select CPU_FREQ_GOV_VIRTUOUS
-   	select CPU_FREQ_GOV_PERFORMANCE
-   	help
-     	  Use the CPUFreq governor 'virtuous' as default.
-
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -311,4 +304,21 @@ config CPU_FREQ_GOV_INTERACTIVE
 	  For details, take a look at linux/Documentation/cpu-freq.
 
 	  If in doubt, say N.
+
+config CPU_FREQ_GOV_SUPERBAD
+   	tristate "'superbad' cpufreq governor"
+   	depends on CPU_FREQ
+   	help
+     	  'superbad' - a "superbad" super smooth rendition of a highly optimized "smartass" governor!
+
+     	  If in doubt, say N.
+
+config CPU_FREQ_GOV_SCARY
+   	tristate "'scary' cpufreq governor"
+   	depends on CPU_FREQ
+   	help
+     	  scary - a governor for cabbages
+
+     	  If in doubt, say N.
+
 endif	# CPU_FREQ
