@@ -40,6 +40,7 @@
 #include <linux/memcontrol.h>
 #include <linux/delayacct.h>
 #include <linux/sysctl.h>
+#include <linux/huge_mm.h>
 
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
@@ -520,12 +521,14 @@ int remove_mapping(struct address_space *mapping, struct page *page)
 void putback_lru_page(struct page *page)
 {
 	int lru;
-	int active = !!TestClearPageActive(page);
-	int was_unevictable = PageUnevictable(page);
+	int active; 
+	int was_unevictable;
 
 	VM_BUG_ON(PageLRU(page));
 
 redo:
+	active = !!TestClearPageActive(page);
+	was_unevictable = PageUnevictable(page);
 	ClearPageUnevictable(page);
 
 	if (page_evictable(page, NULL)) {
@@ -894,6 +897,7 @@ static unsigned long isolate_lru_pages(unsigned long nr_to_scan,
 		unsigned long end_pfn;
 		unsigned long page_pfn;
 		int zone_id;
+		unsigned int isolated_pages = 1;
 
 		page = lru_to_page(src);
 		prefetchw_prev_lru_page(page, src, flags);
@@ -904,7 +908,9 @@ static unsigned long isolate_lru_pages(unsigned long nr_to_scan,
 		case 0:
 			list_move(&page->lru, dst);
 			mem_cgroup_del_lru(page);
-			nr_taken++;
+			isolated_pages = hpage_nr_pages(page);
+			nr_taken += isolated_pages;
+			//      nr_taken++;
 			break;
 
 		case -EBUSY:
@@ -918,6 +924,14 @@ static unsigned long isolate_lru_pages(unsigned long nr_to_scan,
 		}
 
 		if (!order)
+			continue;
+
+		/*
+		 * To save a few cycles, the following pfn-based isolation
+		 * could be bypassed if the newly isolated page is no less
+		 * than the order aligned region.
+		 */
+		if (isolated_pages >= (1 << order))
 			continue;
 
 		/*
