@@ -1735,9 +1735,10 @@ static inline int effective_sc_prio(struct task_struct *p)
 	return 0;
 }
 
-static void set_kswapd_nice(struct task_struct *kswapd, int active)
+static void set_kswapd_nice(struct task_struct *kswapd, struct task_struct *p,
+			    int active)
 {
-	long nice = effective_sc_prio(current);
+	long nice = effective_sc_prio(p);
 
 	if (task_nice(kswapd) > nice || !active)
 		set_user_nice(kswapd, nice);
@@ -2278,6 +2279,7 @@ static int kswapd(void *p)
 			if (!freezing(current))
 				schedule();
 
+			set_user_nice(tsk, 0);
 			order = pgdat->kswapd_max_order;
 		}
 		finish_wait(&pgdat->kswapd_wait, &wait);
@@ -2295,9 +2297,10 @@ static int kswapd(void *p)
 /*
  * A zone is low on free memory, so wake its kswapd task to service it.
  */
-void wakeup_kswapd(struct zone *zone, int order)
+void wakeup_kswapd(struct zone *zone, int order, struct task_struct *p)
 {
 	pg_data_t *pgdat;
+	int active;
 
 	if (!populated_zone(zone))
 		return;
@@ -2309,7 +2312,9 @@ void wakeup_kswapd(struct zone *zone, int order)
 		pgdat->kswapd_max_order = order;
 	if (!cpuset_zone_allowed_hardwall(zone, GFP_KERNEL))
 		return;
-	if (!waitqueue_active(&pgdat->kswapd_wait))
+	active = waitqueue_active(&pgdat->kswapd_wait);
+	set_kswapd_nice(pgdat->kswapd, p, active);
+	if (!active)
 		return;
 	wake_up_interruptible(&pgdat->kswapd_wait);
 }
