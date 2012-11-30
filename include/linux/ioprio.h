@@ -64,6 +64,8 @@ static inline int task_ioprio_class(struct io_context *ioc)
 
 static inline int task_nice_ioprio(struct task_struct *task)
 {
+	if (task->policy == SCHED_ISO)
+		return 0;
 	return (task_nice(task) + 20) / 5;
 }
 
